@@ -16,21 +16,6 @@ import MenuItem from '@mui/material/MenuItem';
 
 const Header = () => {
     return (
-        // <header>
-        //     <Toolbar style={toolBarStyle}>
-        //       <Box style={boxStyle}>
-        //         <Link href='http://localhost:3000/'><img className="logo" src={logo} alt="" /></Link> 
-        //         <TextField style={searchFieldStyle} label="Search Job Now" type="search" variant='filled' size='small'/>  
-        //         <Button style={searchBtnStyle} variant="contained" startIcon={<SearchIcon />}>Search</Button>
-        //       </Box>
-
-        //       <Box style={boxStyle}>
-        //         <Fab size="small" style={fabStyle} href="http://localhost:3000/"><MailIcon style={{color: 'white'}}/></Fab>
-        //         <Fab size="small" style={fabStyle} href="http://localhost:3000/"><NotificationsIcon style={{color: 'white'}}/></Fab>
-        //         <Link style={logoutStyle} href="http://localhost:3000/">Logout</Link> 
-        //       </Box>
-        //     </Toolbar>
-        // </header>
         <header>
             <AppBar sx={{bgcolor: '#D1D3D4'}}>
                 <Grid container justifyContent="center" py={2}>

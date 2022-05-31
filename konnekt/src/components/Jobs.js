@@ -1,14 +1,8 @@
 import React from 'react'
-import Job from './Job'
 
-const Jobs = ({jobsData}) => {
-  // console.log(jobsData)
+const Jobs = () => {
   return (
-    <div className='jobs'>
-      {jobsData.map((job) => {
-        return <Job jobData={job} />
-      })}
-    </div>
+    <div>Jobs</div>
   )
 }
 
