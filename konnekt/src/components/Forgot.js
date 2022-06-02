@@ -9,14 +9,13 @@ import logo from '../images/konnekt-logo.png';
 import {useAuth} from '../contexts/AuthContext';
 import { Alert } from '@mui/material';
 
-const SignIn = () => {
+const Forgot = () => {
 
-    const navigate = useNavigate()
     const [email, setEmail] = useState('');
-    const [pass, setPass] = useState('');
     const [error, setError] = useState('');
+    const [message, setMessage] = useState('');
     const [loading, setLoading] = useState();
-    const { signIn } = useAuth();
+    const { forgot } = useAuth();
 
     async function handleSubmit(e){
         e.preventDefault()
@@ -26,20 +25,21 @@ const SignIn = () => {
         // }
 
         try{
+            setMessage('')
             setError('')
             setLoading(true)
-            await signIn(email, pass)
-            navigate('/')
+            await forgot(email)
+            setMessage('Check your inbox to reset your password')
         }
         catch{
-            setError('Failed to sign in')
+            setError('Failed to reset password')
         }
 
         setLoading(false)
     }
 
     return (
-        <Grid container style={{ height: '100vh' }}>
+        <Grid container style={{ height: '100vh' }} justifyContent='center'>
             <Grid item xs={12} sm={8} md={5}>
                 <Box
                     sx={{
@@ -52,6 +52,7 @@ const SignIn = () => {
                 >
                     <img className="logo" src={logo} alt=""/>
                     {error && <Alert severity='error'>{error}</Alert>}
+                    {message && <Alert severity='success'>{message}</Alert>}
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
                         <TextField
                             margin="normal"
@@ -64,18 +65,6 @@ const SignIn = () => {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                         />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            variant="filled"
-                            id="password"
-                            label="Password"
-                            type="password"
-                            autoComplete="current-password"
-                            value={pass}
-                            onChange={(e) => setPass(e.target.value)}
-                        />
                         <Button
                             disabled={loading}
                             type="submit"
@@ -83,12 +72,12 @@ const SignIn = () => {
                             variant="contained"
                             sx={{ mt: 3, mb: 2 , backgroundColor: '#008ED3'}}
                         >
-                        Sign In
+                        Reset Password
                         </Button>
                         <Grid container>
                             <Grid item xs>
-                                <Link href="/forgot" variant="body" sx={{color: '#008ED3'}}>
-                                    Forgot password?
+                                <Link href="/signin" variant="body" sx={{color: '#008ED3'}}>
+                                    Sign in
                                 </Link>
                             </Grid>
                             <Grid>
@@ -100,16 +89,8 @@ const SignIn = () => {
                     </Box>
                 </Box>
             </Grid>
-            <Grid item
-                sm={4}
-                md={7}
-                style={{
-                backgroundImage: 'url(https://source.unsplash.com/random/?office,work,company)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'}}
-            />
         </Grid>
     );
 }
 
-export default SignIn
+export default Forgot

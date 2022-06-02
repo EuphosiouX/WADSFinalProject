@@ -6,33 +6,46 @@ import Link from '@mui/material/Link';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import logo from '../images/konnekt-logo.png';
+import {useAuth} from '../contexts/AuthContext';
+import { Alert } from '@mui/material';
 
 const SignUp = () => {
 
-    const navigate = useNavigate
-
+    const navigate = useNavigate()
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState();
+    const { signUp } = useAuth();
 
-    const handleSubmit = () => {
-        // Change handle submit later
-        console.log(firstName);
-        console.log(lastName);
-        console.log(email);
-        console.log(pass);
-        setFirstName('');
-        setLastName('');
-        setEmail('');
-        setPass('');
+    async function handleSubmit(e){
+        e.preventDefault()
+
+        if (pass.length < 8){
+            return setError('Password must be at least 8 character long')
+        }
+
+        try{
+            setError('')
+            setLoading(true)
+            await signUp(email, pass)
+            navigate('/')
+        }
+        catch{
+            setError('Unexpected error occured')
+        }
+
+        setLoading(false)
+        
         // Change the navigate logic and link later
-        return navigate("/");
+        // return navigate("/");
     }
 
     return (
         <Grid container sx={{ height: '100vh' }}>
-            <Grid
+            <Grid item
                 sm={4}
                 md={7}
                 style={{
@@ -40,11 +53,11 @@ const SignUp = () => {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'}}
             />
-            <Grid xs={12} sm={8} md={5} >
+            <Grid item xs={12} sm={8} md={5} >
                 
                 <Box
                     sx={{
-                        my: 20,
+                        my: 15,
                         mx: 4,
                         display: 'flex',
                         flexDirection: 'column',
@@ -52,8 +65,9 @@ const SignUp = () => {
                     }}
                 >
                     <img className="logo" src={logo} alt="" />
+                    {error && <Alert severity='error'>{error}</Alert>}
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
-                        <Grid container spacing={1}>
+                        <Grid container spacing={1} justifyContent='center'>
                             <Grid item sm={6}>
                                 <TextField
                                     margin="normal"
@@ -107,6 +121,7 @@ const SignUp = () => {
                             </Grid>
                         </Grid>
                         <Button
+                            disabled={loading}
                             type="submit"
                             fullWidth
                             variant="contained"
@@ -115,7 +130,7 @@ const SignUp = () => {
                         Sign Up
                         </Button>
                         <Grid>
-                            <Link href="#" variant="body" sx={{color: '#008ED3'}}>
+                            <Link href="/signin" variant="body" sx={{color: '#008ED3'}}>
                                 Already have an account? Sign in
                             </Link>
                         </Grid>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import logo from '../images/konnekt-logo.png'
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -13,8 +13,27 @@ import Grid from '@mui/material/Grid';
 import Badge from '@mui/material/Badge';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { Alert } from '@mui/material';
 
 const Header = () => {
+
+    const [error, setError] = useState('');
+    const { logOut } = useAuth();
+    const navigate = useNavigate()
+
+    async function handleLogout(){
+        setError('')
+
+        try {
+            await logOut()
+            navigate('/signin')
+        } catch {
+            setError('Failed to sign out')
+        }
+    }
+
     return (
         <header>
             <AppBar sx={{bgcolor: '#D1D3D4'}}>
@@ -30,6 +49,7 @@ const Header = () => {
                             <TextField label="Search Job Now" type="search" variant='filled' size='small' sx={{mx: 3}}/>  
                             <Button variant="contained" startIcon={<SearchIcon />} sx={{bgcolor:'#008ED3'}}>Search</Button>
                         </Box>
+                        {error && <Alert severity='error'>{error}</Alert>}
                         <Box display="flex" alignItems='center' justifyContent='center'>
                             <Fab size="small" href="http://localhost:3000/" sx={{bgcolor:'#008ED3'}} color='primary'>
                                 <Badge color="secondary" badgeContent={3}>
@@ -41,7 +61,7 @@ const Header = () => {
                                     <NotificationsIcon sx={{color: 'white'}}/>
                                 </Badge>
                             </Fab>
-                            <Link href="http://localhost:3000/" sx={{color:'#008ED3', fontSize: '20px'}}>Logout</Link>
+                            <Link onClick={handleLogout} sx={{color:'#008ED3', fontSize: '20px'}}>Logout</Link>
                         </Box>
                     </Grid> 
                 </Grid>
