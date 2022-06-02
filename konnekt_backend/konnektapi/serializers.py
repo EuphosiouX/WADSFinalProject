@@ -4,9 +4,9 @@ from .models import JobSeeker, JobPost
 class JobSeekerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = JobSeeker
-        fields = ('name', 'age')
+        fields = ('name', 'age', 'lang_preference')
 
 class JobPostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = JobPost
-        fields = ('name', 'age')
+        fields = ('name', 'age', 'lang_qualification')
