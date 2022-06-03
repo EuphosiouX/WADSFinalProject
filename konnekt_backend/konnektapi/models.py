@@ -10,9 +10,9 @@ class JobSeeker(models.Model):
         return self.name, self.age, self.lang_preference
 
 class JobPost(models.Model): 
-    name = models.CharField(max_length=60)
-    age = models.CharField(max_length=60)
-    lang_qualification = models.CharField(max_length=60)
+    company_name = models.CharField(max_length=60)
+    short_job_desc = models.CharField(max_length=60)
+    lang_qualification = models.CharField(max_length=60) 
 
     def __str(self):
-        return self.name, self.age, self.lang_qualification
+        return company_name, self.short_job_desc, self.lang_qualification
