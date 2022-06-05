@@ -21,9 +21,9 @@ const SignIn = () => {
     async function handleSubmit(e){
         e.preventDefault()
 
-        // if (pass.length < 8){
-        //     return setError('Password must be at least 8 character long')
-        // }
+        if (pass.length < 8){
+            return setError('Password must be at least 8 character long')
+        }
 
         try{
             setError('')
@@ -58,7 +58,6 @@ const SignIn = () => {
                             required
                             fullWidth
                             variant="filled"
-                            id="email"
                             label="Email Address"
                             autoComplete="email"
                             value={email}
@@ -69,7 +68,6 @@ const SignIn = () => {
                             required
                             fullWidth
                             variant="filled"
-                            id="password"
                             label="Password"
                             type="password"
                             autoComplete="current-password"

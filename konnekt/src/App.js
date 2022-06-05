@@ -30,7 +30,6 @@ function App() {
                     </Routes>
                 </AuthProvider>
             </Router>
-            {/* <SignIn/> */}
         </div>
     );
 }
