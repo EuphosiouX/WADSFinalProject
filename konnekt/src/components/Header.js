@@ -40,7 +40,7 @@ const Header = () => {
                 <Grid container justifyContent="center" py={2}>
                     <Grid item xs={11} display="flex" justifyContent="space-between">
                         <Box display="flex" alignItems='center' justifyContent='center'>
-                            <Link href='http://localhost:3000/'><img className="logo" src={logo} alt="" /></Link> 
+                            <Link href='/'><img className="logo" src={logo} alt="" /></Link> 
                             <Select variant='filled' defaultValue='Full Time' sx={{marginLeft: 3}} size='small'>
                                 <MenuItem value="Full Time">Full-Time</MenuItem>
                                 <MenuItem value="Part Time">Part-Time</MenuItem>

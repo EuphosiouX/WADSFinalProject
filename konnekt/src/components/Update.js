@@ -1,5 +1,5 @@
 import { React, useState } from 'react'
-import { Button, Typography, Avatar, Box, Grid, FilledInput, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Radio, RadioGroup, FormControl, FormLabel, FormControlLabel, IconButton  } from '@mui/material'
+import { Button, Avatar, Box, Grid, FilledInput, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Radio, RadioGroup, FormControl, FormLabel, FormControlLabel, IconButton  } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {useAuth} from '../contexts/AuthContext';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -7,7 +7,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import CloseIcon from '@mui/icons-material/Close';
 
-const Profile = () => {
+import { Typography } from '@mui/material';
+
+const Update = (props) => {
 
     const skills = [
         'Python',
@@ -22,7 +24,7 @@ const Profile = () => {
     ]
 
     const navigate = useNavigate()
-    const [isOpen, setIsOpen] = useState();
+    const [isOpen, setIsOpen] = useState(false);
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [bdate, setBdate] = useState(new Date());
@@ -33,37 +35,18 @@ const Profile = () => {
     const [loading, setLoading] = useState();
     const { upEmail, upPassword } = useAuth();
 
-    const handleOpen = () => {
-        setIsOpen(true)
-    }
+    const { open, onClose } = props; 
 
     const handleClose = () => {
-        setIsOpen(false)
+        onClose()
     }
 
-    return (
-        <div>
-        <Grid container width='250px' height='200px' mx={1} borderRadius='10px' justifyContent="center" display='column' onClick={handleOpen} sx={{cursor: 'pointer', backgroundColor: '#008ED3'}}>
-            <Grid container height='75px' borderRadius='10px' sx={{
-                backgroundImage: 'url(https://source.unsplash.com/random/?office,work,company)',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'}}
-            />
-            <Grid container height='125px' width='200px' mt={-7} justifyContent='center' textAlign='center' display='column'>
-                <Avatar sx={{ width: 60, height: 60, border: "6px solid #008ED3" }}>H</Avatar>
-                <Grid>
-                    <Typography variant='body' fontWeight='700' fontSize='18px' color='white'>Amber Johnson</Typography>
-                    <Grid>
-                        <Typography variant='body' color='white'>Full stack web developer, excel in python</Typography>
-                    </Grid>
-                </Grid>
-            </Grid>      
-        </Grid>
-        <Dialog open={isOpen} fullWidth>
+    return(
+        <Dialog open={open} onClose={handleClose} fullWidth>
             <DialogTitle variant='body'>
                 <Box display='flex' justifyContent='space-between' alignItems='center'>
                     Post Job
-                    <IconButton onClick={handleClose}>
+                    <IconButton>
                         <CloseIcon/>
                     </IconButton>
                 </Box>
@@ -175,8 +158,7 @@ const Profile = () => {
                 </Box>
             </DialogActions>
         </Dialog>
-        </div>
     )
 }
 
-export default Profile
+export default Update

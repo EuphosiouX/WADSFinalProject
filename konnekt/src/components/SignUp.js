@@ -8,39 +8,117 @@ import Grid from '@mui/material/Grid';
 import logo from '../images/konnekt-logo.png';
 import {useAuth} from '../contexts/AuthContext';
 import { Alert } from '@mui/material';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import { Typography } from '@mui/material';
 
 const SignUp = () => {
 
     const navigate = useNavigate()
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
+    const [bdate, setBdate] = useState(new Date());
+    const [gender, setGender] = useState('Female');
+    const [image, setImage] = useState();
+    const [image64, setImage64] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState();
-    const { signUp } = useAuth();
+    const { signUp, currentUser } = useAuth();
 
-    async function handleSubmit(e){
+    const dateStyle = (date) => {
+        let dd = date.getDate();
+        let mm = date.getMonth()+1;
+        const yyyy = date.getFullYear();
+
+        if(dd<10){
+            dd = '0' + dd
+        }
+
+        if(mm<10){
+            mm = '0' + mm
+        }
+
+        return setBdate(mm + '/' + dd + '/' + yyyy)
+    }
+
+    const toBase64 = (file) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file)
+        reader.onloadend = () => {
+            return setImage64(reader.result)
+        }
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (pass.length < 8){
-            return setError('Password must be at least 8 character long')
-        }
+        // if (pass.length < 8){
+        //     return setError('Password must be at least 8 character long')
+        // }
+
+        
+        // try{
+        //     setError('')
+        //     setLoading(true)
+        //     await signUp(email, pass)
+        //     console.log(image64)
+        //     console.log(firstName)
+        //     console.log(lastName)
+        //     console.log(bdate)
+        //     console.log(gender)
+        //     console.log(image)
+        //     console.log(email)
+        //     console.log(pass)
+        //     console.log(currentUser.email)
+        //     console.log(currentUser.uid)
+        //     navigate('/')
+        // }
+        // catch (err){
+        //     setError('Unexpected error occured')
+        // }
+
+        // setLoading(false)
 
         try{
-            setError('')
-            setLoading(true)
-            await signUp(email, pass)
-            navigate('/')
+            const res = await fetch('http://localhost:8000/jobseeker/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: firstName + ' ' + lastName,
+                    birth_date: bdate,
+                    gender: gender,
+                    profile_image: image,
+                    email: email,
+                    password: pass
+                }),
+            });
         }
-        catch{
-            setError('Unexpected error occured')
+        catch (err){
+            console.log(err)
         }
 
-        setLoading(false)
-        
-        // Change the navigate logic and link later
-        // return navigate("/");
+        // try{
+        //     const res = await fetch('http://localhost:8000/jobseeker/', {
+        //         method: 'GET',
+        //         headers: {
+        //             accept: 'application/json'
+        //         },
+        //     });
+        // }
+        // catch (err){
+        //     console.log(err)
+        // }
     }
 
     return (
@@ -67,25 +145,23 @@ const SignUp = () => {
                     <img className="logo" src={logo} alt="" />
                     {error && <Alert severity='error'>{error}</Alert>}
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
-                        <Grid container spacing={1} justifyContent='center'>
-                            <Grid item sm={6}>
+                        <Grid container spacing={1} justifyContent='center' mb={1}>
+                            <Grid item xs={6}>
                                 <TextField
                                     margin="normal"
                                     required
                                     fullWidth
-                                    id="firstName"
                                     label="First Name"
                                     autoComplete="given-name"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
                                 />
                             </Grid>
-                            <Grid item sm={6}>
+                            <Grid item xs={6}>
                                 <TextField
                                     margin="normal"
                                     required
                                     fullWidth
-                                    id="lastName"
                                     label="Last Name"
                                     autoComplete="family-name"
                                     value={lastName}
@@ -93,13 +169,42 @@ const SignUp = () => {
                                 />
                             </Grid>
                         </Grid>
-                        <Grid container spacing={1} sx={{mt:1}}>
+                        <Grid container spacing={1} justifyContent='center'>
+                            <Grid item xs={6}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        label="Birth Date"
+                                        value={bdate}
+                                        onChange={(e) => dateStyle(e)}
+                                        renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                </LocalizationProvider>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl>
+                                    <FormLabel>Gender</FormLabel>
+                                        <RadioGroup     
+                                            row
+                                            defaultValue="Female"
+                                            value={gender}
+                                            onChange={(e) => setGender(e.target.value)}
+                                        >
+                                            <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                                            <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                        <Grid container mt={1}>
+                            <Typography variant='body' mr={3}>Add profile picture</Typography>
+                            <input type='file' onChange={(e) => {setImage(e.target.files[0]); toBase64(e.target.files[0])}}></input>
+                        </Grid>
+                        <Grid container spacing={1} > 
                             <Grid item xs={12}>
                                 <TextField
                                     margin="normal"
                                     required
                                     fullWidth
-                                    id="email"
                                     label="Email Address"
                                     autoComplete="email"
                                     value={email}
@@ -111,7 +216,6 @@ const SignUp = () => {
                                     margin="normal"
                                     required
                                     fullWidth
-                                    id="password"
                                     label="Password"
                                     type="password"
                                     autoComplete="new-password"
