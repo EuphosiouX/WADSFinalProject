@@ -9,4 +9,4 @@ class JobSeekerSerializer(serializers.HyperlinkedModelSerializer):
 class JobPostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = JobPost
-        fields = ('company_name', 'job_position', 'lang_qualification')
+        fields = ('pub_date', 'company_name', 'job_position', 'lang_qualification')

@@ -11,5 +11,5 @@ class JobSeekerViewSet(viewsets.ModelViewSet):
 class JobPostViewSet(viewsets.ModelViewSet):
     search_fields = ['job_position']
     filter_backends = (filters.SearchFilter,)
-    queryset = JobPost.objects.all().order_by('company_name')
+    queryset = JobPost.objects.all().order_by('pub_date')
     serializer_class = JobPostSerializer
