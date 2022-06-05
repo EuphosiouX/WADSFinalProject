@@ -52,7 +52,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000'        
+    'http://localhost:3000',
 ] 
 
 ROOT_URLCONF = 'konnekt_backend.urls'
