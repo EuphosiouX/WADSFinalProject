@@ -15,5 +15,5 @@ class JobPost(models.Model):
     job_position = models.CharField(max_length=60)
     lang_qualification = models.CharField(max_length=60) 
 
-    def __str(self):
-        return company_name, self.job_position, self.lang_qualification
+    def __str__(self):
+        return self.pub_date, company_name, self.job_position, self.lang_qualification
