@@ -46,7 +46,7 @@ const SignUp = () => {
             mm = '0' + mm
         }
 
-        return setBdate(mm + '/' + dd + '/' + yyyy)
+        return setBdate(yyyy + '-' + mm + '-' + dd)
     }
 
     const toBase64 = (file) => {
@@ -58,7 +58,7 @@ const SignUp = () => {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
 
         // if (pass.length < 8){
         //     return setError('Password must be at least 8 character long')
@@ -88,11 +88,11 @@ const SignUp = () => {
         // setLoading(false)
 
         try{
-            const res = await fetch('http://localhost:8000/jobseeker/', {
+            let res = await fetch('http://localhost:8000/jobseeker/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json',
+                    Accept: 'application/json',
                 },
                 body: JSON.stringify({
                     name: firstName + ' ' + lastName,
@@ -100,7 +100,7 @@ const SignUp = () => {
                     gender: gender,
                     profile_image: image,
                     email: email,
-                    password: pass
+                    password: pass,
                 }),
             });
         }
