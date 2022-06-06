@@ -12,6 +12,7 @@ import Profile from './components/Profile';
 import AuthProvider from './contexts/AuthContext';
 import Dashboard from "./components/Dashboard";
 import PrivateRoute from './components/PrivateRoute'
+import PublicRoute from './components/PublicRoute'
 import Forgot from './components/Forgot'
 
 function App() {
@@ -21,9 +22,11 @@ function App() {
             <Router>
                 <AuthProvider>
                     <Routes>
-                        <Route path='/signup' element={<SignUp/>}/>
-                        <Route path='/signin' element={<SignIn/>}/>
-                        <Route path='/forgot' element={<Forgot/>}/>
+                        <Route element={<PublicRoute/>}>
+                            <Route path='/signup' element={<SignUp/>}/>
+                            <Route path='/signin' element={<SignIn/>}/>
+                            <Route path='/forgot' element={<Forgot/>}/>
+                        </Route>
                         <Route element={<PrivateRoute/>}>
                             <Route exact path='/' element={<Dashboard/>}/>
                         </Route>

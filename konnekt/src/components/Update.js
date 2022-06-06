@@ -45,7 +45,7 @@ const Update = (props) => {
         <Dialog open={open} onClose={handleClose} fullWidth>
             <DialogTitle variant='body'>
                 <Box display='flex' justifyContent='space-between' alignItems='center'>
-                    Post Job
+                    Update Profile
                     <IconButton>
                         <CloseIcon/>
                     </IconButton>

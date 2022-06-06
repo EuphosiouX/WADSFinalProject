@@ -31,8 +31,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost:3000", "konnekt-wads.herokuapp.com"]
 
-# Date Format
-DATE_INPUT_FORMATS = ['%Y-%m-%d']
 
 # Application definition
 
@@ -59,11 +57,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',     
-    'http://localhost:8000',   
-] 
+<<<<<<< HEAD
+=======
+CORS_ALLOW_ALL_ORIGINS = True
+>>>>>>> upstream/master
 
 ROOT_URLCONF = 'konnekt_backend.urls'
 

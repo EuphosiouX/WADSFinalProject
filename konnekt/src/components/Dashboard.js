@@ -12,15 +12,14 @@ const Dashboard = () => {
         <div>
             <Header/>
             <Box py={15} display='flex' justifyContent='space-between'>
-                <Grid container display='flex' justifyContent='center'>
-                    <Profile/>
+                <Grid container justifyContent='center'>
                     <Profile/>
                 </Grid>
                 <Grid container justifyContent='center'>
                     {data.map(job => <Job key={job.id} {...job}/>)}
                 </Grid>
                 <Grid container justifyContent='center'>
-                    <Profile/>
+                    {/* <Profile/> */}
                 </Grid>
             </Box>      
         </div>
