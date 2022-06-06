@@ -46,7 +46,7 @@ const SignUp = () => {
             mm = '0' + mm
         }
 
-        return setBdate(mm + '/' + dd + '/' + yyyy)
+        return setBdate(yyyy + '-' + mm + '-' + dd)
     }
 
     const toBase64 = (file) => {
@@ -57,68 +57,44 @@ const SignUp = () => {
         }
     }
 
-    const handleSubmit = async (e) => {
+    let handleSubmit = async (e) => {
         e.preventDefault()
 
-        // if (pass.length < 8){
-        //     return setError('Password must be at least 8 character long')
-        // }
-
+        if (pass.length < 8){
+            return setError('Password must be at least 8 character long')
+        }
         
-        // try{
-        //     setError('')
-        //     setLoading(true)
-        //     await signUp(email, pass)
-        //     console.log(image64)
-        //     console.log(firstName)
-        //     console.log(lastName)
-        //     console.log(bdate)
-        //     console.log(gender)
-        //     console.log(image)
-        //     console.log(email)
-        //     console.log(pass)
-        //     console.log(currentUser.email)
-        //     console.log(currentUser.uid)
-        //     navigate('/')
-        // }
-        // catch (err){
-        //     setError('Unexpected error occured')
-        // }
-
-        // setLoading(false)
-
         try{
-            const res = await fetch('http://localhost:8000/jobseeker/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: firstName + ' ' + lastName,
-                    birth_date: bdate,
-                    gender: gender,
-                    profile_image: image,
-                    email: email,
-                    password: pass
-                }),
-            });
+            setError('')
+            setLoading(true)
+            await signUp(email, pass)
+            handlePost()
+            navigate('/')
+            console.log(image64)
         }
         catch (err){
             console.log(err)
+            setError('Unexpected error occured')
         }
 
-        // try{
-        //     const res = await fetch('http://localhost:8000/jobseeker/', {
-        //         method: 'GET',
-        //         headers: {
-        //             accept: 'application/json'
-        //         },
-        //     });
-        // }
-        // catch (err){
-        //     console.log(err)
-        // }
+        setLoading(false)
+    }
+
+    let handlePost = async (e) => {
+        e.preventDefault()
+        
+        const uploadData = new FormData();
+        uploadData.append('name', firstName + ' ' + lastName)
+        uploadData.append('birth_date', bdate)
+        uploadData.append('gender', gender)
+        uploadData.append('image', image, image.name)
+        uploadData.append('email', email)
+        // uploadData.append('password', currentUser.uid)
+
+        await fetch('http://localhost:8000/jobseeker/', {
+            method: 'POST',
+            body: uploadData
+        });
     }
 
     return (
