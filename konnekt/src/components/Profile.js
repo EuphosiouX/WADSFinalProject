@@ -39,7 +39,7 @@ const Profile = () => {
 
         let handleFetch = async () => {
             try{
-                const res = await fetch('http://localhost:8000/jobseeker/', {
+                const res = await fetch('http://localhost:8000/jobseeker', {
                     method: 'GET',
                 })
                 const profiles = await res.json()
@@ -71,7 +71,7 @@ const Profile = () => {
 
     return (
         <div>
-        <Grid container width='450px' height='400px' mx={1} borderRadius='10px' justifyContent="center" display='column' onClick={handleOpen} sx={{cursor: 'pointer', backgroundColor: '#008ED3'}}>
+        <Grid container width='450px' height='400px' mx={1} borderRadius='10px' justifyContent="center" display='column' onClick={handleOpen} sx={{cursor: 'pointer', backgroundColor: '#008ED3', '&:hover':{boxShadow: '0px 25px 25px rgba(0, 0, 0, 0.1)'}}}>
             <Grid container height='175px' borderRadius='10px' sx={{
                 backgroundImage: 'url(https://source.unsplash.com/random/?office,work,company)',
                 backgroundSize: 'cover',

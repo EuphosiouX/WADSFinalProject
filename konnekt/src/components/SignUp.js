@@ -70,31 +70,45 @@ const SignUp = () => {
             await signUp(email, pass)
             handlePost()
             navigate('/')
-            console.log(image64)
         }
         catch (err){
-            console.log(err)
             setError('Unexpected error occured')
         }
 
         setLoading(false)
     }
 
-    let handlePost = async (e) => {
-        e.preventDefault()
-        
-        const uploadData = new FormData();
-        uploadData.append('name', firstName + ' ' + lastName)
-        uploadData.append('birth_date', bdate)
-        uploadData.append('gender', gender)
-        uploadData.append('image', image, image.name)
-        uploadData.append('email', email)
-        // uploadData.append('password', currentUser.uid)
+    let handlePost = async () => {
+        try{
+            const uploadData = new FormData();
+            uploadData.append('name', firstName + ' ' + lastName)
+            uploadData.append('birth_date', bdate)
+            uploadData.append('gender', gender)
+            uploadData.append('image', image, image.name)
+            uploadData.append('email', email)
+            // uploadData.append('password', currentUser.uid)
 
-        await fetch('http://localhost:8000/jobseeker/', {
-            method: 'POST',
-            body: uploadData
-        });
+            await fetch('/jobseeker/', {
+                method: 'POST',
+                body: uploadData
+            });
+
+            const res = await fetch('/face-match-enrollment', {
+                method: 'POST',
+                body: {
+                    "images": [
+                        `${image64}`
+                    ]
+                }
+            });
+            const reply = await res.json()
+            console.log(reply)
+            }
+
+            
+        catch (err){
+            console.log(err)
+        }
     }
 
     return (
