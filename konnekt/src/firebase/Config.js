@@ -7,17 +7,17 @@ import { getAuth } from "firebase/auth"
 // Your web app's Firebase configuration
 
 const app = initializeApp({
-    apiKey: "AIzaSyBOFASqygf_1fdGQv91AraUmO3ZjAVmuEA",
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
 
-    authDomain: "konnekt-development.firebaseapp.com",
+    authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
 
-    projectId: "konnekt-development",
+    projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
 
-    storageBucket: "konnekt-development.appspot.com",
+    storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
 
-    messagingSenderId: "890430400299",
+    messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
 
-    appId: "1:890430400299:web:69fe105a69f995f9e9076e"
+    appId: process.env.REACT_APP_FIREBASE_APP_ID,
 })
 
 
