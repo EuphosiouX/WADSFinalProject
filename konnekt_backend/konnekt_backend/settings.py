@@ -57,10 +57,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-<<<<<<< HEAD
-=======
 CORS_ALLOW_ALL_ORIGINS = True
->>>>>>> upstream/master
 
 ROOT_URLCONF = 'konnekt_backend.urls'
 
