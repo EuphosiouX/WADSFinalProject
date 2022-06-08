@@ -25,13 +25,14 @@ const SignUp = () => {
     const [lastName, setLastName] = useState('');
     const [bdate, setBdate] = useState(new Date());
     const [gender, setGender] = useState('Female');
-    const [image, setImage] = useState();
-    const [image64, setImage64] = useState('');
+    // const [image, setImage] = useState();
+    // const [image64, setImage64] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
+    const [cpass, setCpass] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState();
-    const { signUp, currentUser } = useAuth();
+    const { signUp } = useAuth();
 
     const dateStyle = (date) => {
         let dd = date.getDate();
@@ -49,13 +50,13 @@ const SignUp = () => {
         return setBdate(yyyy + '-' + mm + '-' + dd)
     }
 
-    const toBase64 = (file) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file)
-        reader.onloadend = () => {
-            return setImage64(reader.result)
-        }
-    }
+    // const toBase64 = (file) => {
+    //     const reader = new FileReader();
+    //     reader.readAsDataURL(file)
+    //     reader.onloadend = () => {
+    //         setImage64(reader.result)
+    //     }
+    // }
 
     let handleSubmit = async (e) => {
         e.preventDefault()
@@ -63,6 +64,14 @@ const SignUp = () => {
         if (pass.length < 8){
             return setError('Password must be at least 8 character long')
         }
+
+        if (pass !== cpass){
+            return setError('Check your confirm password')
+        }
+
+        // if (image == null){
+        //     return setError('Please add a picture')
+        // }
         
         try{
             setError('')
@@ -84,25 +93,30 @@ const SignUp = () => {
             uploadData.append('name', firstName + ' ' + lastName)
             uploadData.append('birth_date', bdate)
             uploadData.append('gender', gender)
-            uploadData.append('image', image, image.name)
             uploadData.append('email', email)
-            // uploadData.append('password', currentUser.uid)
+            uploadData.append('password', pass)
+            uploadData.append('desc', 'Type something about yourself!!!')
 
             await fetch('/jobseeker/', {
                 method: 'POST',
                 body: uploadData
             });
 
-            const res = await fetch('/face-match-enrollment', {
-                method: 'POST',
-                body: {
-                    "images": [
-                        `${image64}`
-                    ]
-                }
-            });
-            const reply = await res.json()
-            console.log(reply)
+            // const res = await fetch('/face-recognition', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-type': 'application/json',
+            //         'Authorization': 'NODEFLUX-HMAC-SHA256 Credential=API0LMVW61U8VAO7OCJ9ZC83F/20220607/nodeflux.api.v1beta1.ImageAnalytic/StreamImageAnalytic, SignedHeaders=x-nodeflux-timestamp, Signature=1a7dd0ecade11ae71622e0d1b4359aa31a1e827eb138fedd4a2d13c8db222e36',
+            //         'x-nodeflux-timestamp': '20220607T092730Z'
+            //     },
+            //     body: JSON.stringify({
+            //         "images": [
+            //             `${image64}`
+            //         ]
+            //     })
+            // });
+            // const reply = await res.json()
+            // console.log(reply)
             }
 
             
@@ -185,10 +199,10 @@ const SignUp = () => {
                                 </FormControl>
                             </Grid>
                         </Grid>
-                        <Grid container mt={1}>
+                        {/* <Grid container mt={1}>
                             <Typography variant='body' mr={3}>Add profile picture</Typography>
                             <input type='file' onChange={(e) => {setImage(e.target.files[0]); toBase64(e.target.files[0])}}></input>
-                        </Grid>
+                        </Grid> */}
                         <Grid container spacing={1} > 
                             <Grid item xs={12}>
                                 <TextField
@@ -211,6 +225,18 @@ const SignUp = () => {
                                     autoComplete="new-password"
                                     value={pass}
                                     onChange={(e) => setPass(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    label="Confirm Password"
+                                    type="password"
+                                    autoComplete="new-password"
+                                    value={cpass}
+                                    onChange={(e) => setCpass(e.target.value)}
                                 />
                             </Grid>
                         </Grid>

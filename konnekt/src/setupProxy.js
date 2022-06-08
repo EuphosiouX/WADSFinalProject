@@ -1,25 +1,33 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
-require('dotenv').config()
+const backend = {
+    target: 'http://127.0.0.1:8000',
+    changeOrigin: true
+};
+
+const nodefluxAuth = {
+    target: 'https://backend.cloud.nodeflux.io/auth',
+    changeOrigin: true,
+};
+
+const nodefluxAnalytics = {
+    target: 'https://api.cloud.nodeflux.io/v1/analytics',
+    changeOrigin: true
+};
 
 module.exports = function (app) {
-    
     app.use(
-        '/jobseeker/',
-        createProxyMiddleware({
-        target: "http://localhost:8000",
-        changeOrigin: true
-        })
+        createProxyMiddleware('/jobseeker/', backend)
     );
     app.use(
-        "/face-match-enrollment",
-        createProxyMiddleware( {
-        target: "https://api.cloud.nodeflux.io/v1/analytics",
-        changeOrigin: true,
-        headers: {
-            Authorization: `NODEFLUX-HMAC-SHA256 Credential=${process.env.NODEFLUX_ACCESS_KEY}/${process.env.NODEFLUX_DATE}/nodeflux.api.v1beta1.ImageAnalytic/StreamImageAnalytic, SignedHeaders=x-nodeflux-timestamp, Signature=${process.env.NODEFLUX_TOKEN}`,
-            "x-nodeflux-timestamp": `${process.env.X_NODEFLUX_TIMESTAMP}`,
-            "Content-Type": "application/json",
-        },
-        })
+        createProxyMiddleware('/signatures', nodefluxAuth)
+    );
+    app.use(
+        createProxyMiddleware('/create-face-enrollment', nodefluxAnalytics)
+    );
+    app.use(
+        createProxyMiddleware('/delete-face-enrollment', nodefluxAnalytics)
+    );
+    app.use(
+        createProxyMiddleware('/face-match-enrollment', nodefluxAnalytics)
     );
 };

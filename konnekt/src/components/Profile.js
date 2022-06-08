@@ -1,5 +1,5 @@
 import { React, useState, useEffect } from 'react'
-import { Button, Typography, Avatar, Box, Grid, FilledInput, Select, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Radio, RadioGroup, FormControl, FormLabel, FormControlLabel, IconButton  } from '@mui/material'
+import { Alert, Button, Typography, Avatar, Box, Grid, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Radio, RadioGroup, FormControl, FormLabel, FormControlLabel, IconButton  } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import {useAuth} from '../contexts/AuthContext';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -23,6 +23,7 @@ const Profile = () => {
 
     const navigate = useNavigate()
     const [isOpen, setIsOpen] = useState(false);
+    const [id, setId] = useState();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [name, setName] = useState('');
@@ -31,6 +32,8 @@ const Profile = () => {
     const [image, setImage] = useState('');
     const [email, setEmail] = useState('');
     const [pass, setPass] = useState('');
+    const [desc, setDesc] = useState('');
+    const [pref, setPref] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
     const { upEmail, upPassword,currentUser } = useAuth();
@@ -39,17 +42,33 @@ const Profile = () => {
 
         let handleFetch = async () => {
             try{
-                const res = await fetch('http://localhost:8000/jobseeker', {
+                const res = await fetch('/jobseeker/', {
                     method: 'GET',
                 })
                 const profiles = await res.json()
                 for(let i=0; i<profiles.length; i++){
                     if(profiles[i].email === currentUser.email){
+                        setId(profiles[i].id)
                         setName(profiles[i].name)
+                        setFirstName(profiles[i].name.split(' ')[0])
+                        setLastName(profiles[i].name.split(' ')[1])
                         setBdate(profiles[i].birth_date)
                         setGender(profiles[i].gender)
                         setImage(profiles[i].image)
-                        setEmail(profiles[i].email)
+                        setDesc(profiles[i].desc)
+                        setPref(profiles[i].lang_preference)
+                        if(pass !== currentUser.uid || email !== currentUser.email){
+                            await fetch('/jobseeker/' + profiles[i].id + '/', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    email: currentUser.email,
+                                    password: currentUser.uid
+                                })
+                            })
+                        }
                         break
                     }
                 }
@@ -61,12 +80,67 @@ const Profile = () => {
         handleFetch()
     }, []);
 
+    const dateStyle = (date) => {
+        let dd = date.getDate();
+        let mm = date.getMonth()+1;
+        const yyyy = date.getFullYear();
+
+        if(dd<10){
+            dd = '0' + dd
+        }
+
+        if(mm<10){
+            mm = '0' + mm
+        }
+
+        return setBdate(yyyy + '-' + mm + '-' + dd)
+    }
+
     const handleOpen = () => {
         setIsOpen(true)
     }
 
     const handleClose = () => {
         setIsOpen(false)
+        window.location.reload()
+    }
+
+    const handleUpdateProfile = async (e) => {
+        e.preventDefault()
+
+        try{
+            setError('')
+            setLoading(true)
+
+            if(desc.length < 1 || firstName.length < 1 || lastName.length < 1){
+                handleClose()
+            }
+
+            else{
+                await fetch('/jobseeker/' + id + '/', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: firstName + ' ' + lastName,
+                        birth_date: bdate,
+                        gender: gender,
+                        desc: desc,
+                        lang_preference: pref
+                    })
+                })
+            }
+
+            
+
+
+        }catch (err){
+            setError('Unexpected error occured')
+            console.log(err)
+        }
+        setLoading(false)
+        handleClose()
     }
 
     return (
@@ -77,26 +151,30 @@ const Profile = () => {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center'}}
             />
-            <Grid container height='225px' width='400px' mt={-20} justifyContent='center' textAlign='center' display='column'>
+            <Grid container height='225px' width='350px' mt={-20} justifyContent='center' textAlign='center' display='column'>
                 <Avatar src={image} sx={{ width: 160, height: 160, border: "6px solid #008ED3" }}/>
                 <Grid>
-                    <Typography variant='body' fontWeight='700' fontSize='25px' color='white'>{name}</Typography>
+                    <Typography variant='body' fontWeight='700' fontSize='25px' color='white'>{firstName} {lastName}</Typography>
                     <Grid>
-                        <Typography variant='body' color='white'>Full stack web developer, excel in python</Typography>
+                        <Typography variant='body' color='white'>{desc}</Typography>
                     </Grid>
                 </Grid>
             </Grid>      
         </Grid>
+
+{/*---------------------------------------------------------------------------------------------------------------------------------------*/}
+
         <Dialog open={isOpen} fullWidth>
             <DialogTitle variant='body'>
                 <Box display='flex' justifyContent='space-between' alignItems='center'>
-                    Post Job
+                    Update Profile
                     <IconButton onClick={handleClose}>
                         <CloseIcon/>
                     </IconButton>
                 </Box>
             </DialogTitle>
             <DialogContent>
+                {error && <Alert severity='error'>{error}</Alert>}
                 <Grid container spacing={2}>
                     <Grid item xs={6}>
                         <TextField
@@ -125,7 +203,7 @@ const Profile = () => {
                             <DatePicker
                                 label="Birth Date"
                                 value={bdate}
-                                onChange={(e) => setBdate(e)}
+                                onChange={(e) => dateStyle(e)}
                                 renderInput={(params) => <TextField variant='filled' fullWidth {...params} />}
                             />
                         </LocalizationProvider>
@@ -146,7 +224,7 @@ const Profile = () => {
                     </Grid>
                 </Grid>
                 <Grid container> 
-                    <Grid item xs={12}>
+                    {/* <Grid item xs={12}>
                         <TextField
                             margin="normal"
                             required
@@ -170,18 +248,17 @@ const Profile = () => {
                             value={pass}
                             onChange={(e) => setPass(e.target.value)}
                         />
-                    </Grid>
+                    </Grid> */}
                     <Grid item xs={12}>
                         <TextField
                             margin="normal"
-                            required
                             fullWidth
                             multiline
                             rows={4}
                             variant='filled'
                             label="Profile Description"
-                            value={pass}
-                            onChange={(e) => setPass(e.target.value)}
+                            value={desc}
+                            onChange={(e) => setDesc(e.target.value)}
                         />
                     </Grid>
                 </Grid>
@@ -197,9 +274,9 @@ const Profile = () => {
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Box width='100%' display='flex' justifyContent='space-between' align='center' mx={2} mb={1}>
-                    <Typography color='red' variant='subtitle'>*Leave field blank if you don't want to update that field</Typography>
-                    <Button variant='contained' sx={{backgroundColor:'#008ED3'}}>Update</Button>
+                <Box width='100%' display='flex' justifyContent='space-between' alignItems='center' mx={2} mb={1}>
+                    <Typography color='red' variant='subtitle'>*Only change the one you want to update</Typography>
+                    <Button disabled={loading} variant='contained' sx={{backgroundColor:'#008ED3'}} onClick={handleUpdateProfile}>Update</Button>
                 </Box>
             </DialogActions>
         </Dialog>
