@@ -22,7 +22,9 @@ const Header = () => {
     const [pass, setPass] = useState('');
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('');
-    const [boxError, setBoxError] = useState('');
+    const [enrollError, setEnrollError] = useState('');
+    const [matchError, setMatchError] = useState('');
+    const [uploadError, setUploadError] = useState('');
     const [isOpen, setIsOpen] = useState(false);
     const [isOpenn, setIsOpenn] = useState(false);
     const [isOpennn, setIsOpennn] = useState(false);
@@ -77,22 +79,31 @@ const Header = () => {
     }
 
     const handleClose = () => {
+        setUploadError('')
+        setMatchError('')
+        setEnrollError('')
         setIsOpen(false)
         window.location.reload()
     }
 
     const handleClosee = () => {
+        setUploadError('')
+        setMatchError('')
+        setEnrollError('')
         setIsOpenn(false)
     }
 
     const handleCloseee = () => {
+        setUploadError('')
+        setMatchError('')
+        setEnrollError('')
         setIsOpennn(false)
     }
 
     const handleUpdatePhoto = () => {
-        setError('')
+        setUploadError('')
         if (imageFile == null){
-            return setBoxError('Please add a photo before updating/changing the photo')
+            return setUploadError('Please add a photo before updating/changing the photo')
         }
         handleOpenn()
     }
@@ -103,10 +114,14 @@ const Header = () => {
     }
 
     const handleVerify = async () => {
+        setMatchError('')
+        setEnrollError('')
+        setLoading(true)
         let enrollReply
         let faceId
         let matchReply
-        let editedPic = 'data:image/jpeg;base64,/9j/' + picture.substring(23)
+
+        console.log(picture)
 
         enrollReply = await nodefluxEnrollment(image64)
 
@@ -114,50 +129,47 @@ const Header = () => {
             enrollReply = await nodefluxEnrollment(image64)
         }
 
-        if(enrollReply.job.result.status === 'success'){
+        if(enrollReply.message === 'Face Enrollment Success'){
             faceId = enrollReply.job.result.result[0].create_face_enrollment.face_id
         }
         else{
-            return setBoxError(enrollReply.message)
+            setLoading(false)
+            return setEnrollError(enrollReply.message)
         }
-
+        
         console.log(faceId)
         console.log(enrollReply.message)
         
-        // matchReply = await nodefluxMatch(editedPic, faceId)
+        matchReply = await nodefluxMatch(picture, faceId)
 
-        // if(matchReply.job.result.status !== ('success' || 'incomplete')){
-        //     matchReply = await nodefluxEnrollment(editedPic, faceId)
-        // }
+        if(matchReply.job.result.status !== ('success' || 'incomplete')){
+            matchReply = await nodefluxMatch(picture, faceId)
+        }
 
-        // console.log(matchReply)
+        if(matchReply.message === 'Face Match Enrollment Success'){
+            try{
+                const uploadData = new FormData();
+                uploadData.append('image', imageFile, imageFile.name)
 
+                await fetch('/jobseeker/' + id + '/', {
+                    method: 'PUT',
+                    body: uploadData
+                })
+            }catch (err){
+                console.log(err)
+                setLoading(false)
+                return setMatchError('Unexpected error occured')
+            }
+            handleCloseee()
+            handleClosee()
+            handleClose()
+            setLoading(false)
+        }
 
-
-        // while(true){
-        //     reply = await nodefluxEnrollment(image64)
-
-        //     if(!(reply.job.result.status !== ('success' || 'incomplete'))){
-        //         console.log(reply)
-        //         break
-        //     }
-        // }
-
-        // do{
-        //     reply = await nodefluxEnrollment(image64)
-        // }while(
-        //     reply.job.result.status !== ('success' || 'incomplete')
-        // )
-        
-        // console.log(reply.job)
-        // if(reply.job.result.status === 'success'){
-        //     faceId = reply.job.result[0].face_id
-        //     console.log(faceId)
-        // }
-        // else{
-        //     return setBoxError(reply.message)
-        // }
-        
+        else{
+            setLoading(false)
+            return setMatchError(matchReply.message)
+        }
     }
 
     const handleUpdateProfile = () => {
@@ -220,7 +232,7 @@ const Header = () => {
                         </IconButton>
                     </Box>
                 </DialogTitle>
-                {boxError && <Alert severity='error'>{boxError}</Alert>}
+                {uploadError && <Alert severity='error'>{uploadError}</Alert>}
                 <DialogContent>
                     <Grid container spacing={2}>
                         <Grid container item xs={5} alignItems='center'>
@@ -244,7 +256,7 @@ const Header = () => {
                             <Button disabled={loading} variant='contained' sx={{backgroundColor:'#008ED3'}} onClick={handleUpdatePhoto}>Update Photo</Button>
                         </Grid>
                         <Grid container item xs={7} justifyContent='center' alignItems='center'>
-                            <Button disabled={loading} variant='contained' sx={{backgroundColor:'#008ED3'}} onClick={handleUpdateProfile}>Update Credentials</Button>
+                            <Button variant='contained' sx={{backgroundColor:'#008ED3'}} onClick={handleUpdateProfile}>Update Credentials</Button>
                         </Grid>
                     </Grid>
                 </DialogActions>
@@ -261,16 +273,15 @@ const Header = () => {
                         </IconButton>
                     </Box>
                 </DialogTitle>
-                {boxError && <Alert severity='error'>{boxError}</Alert>}
                 <DialogContent>
                     <Box justifyContent='center'>
-                        <Webcam ref={webcamRef} width='550px'></Webcam>
+                        <Webcam ref={webcamRef} width='550px' screenshotFormat="image/jpeg"></Webcam>
                     </Box>
                 </DialogContent>
                 <DialogActions>
                     <Box width='100%' display='flex' justifyContent='space-between' alignItems='center' mx={2} mb={1}>
                         <Typography color='red' variant='subtitle'>*This picture is to verify if the uploaded photo is you and to create your face recognition (camera loading may take a while and please position yourself on the center)</Typography>
-                        <Button disabled={loading} variant='contained' sx={{backgroundColor:'#008ED3'}} onClick={handleScreenshot}>Take Picture</Button>
+                        <Button variant='contained' sx={{backgroundColor:'#008ED3'}} onClick={handleScreenshot}>Take Picture</Button>
                     </Box>
                 </DialogActions>
             </Dialog>       
@@ -286,7 +297,8 @@ const Header = () => {
                         </IconButton>
                     </Box>
                 </DialogTitle>
-                {boxError && <Alert severity='error'>{boxError}</Alert>}
+                {enrollError && <Alert severity='error'>{enrollError}</Alert>}
+                {matchError && <Alert severity='error'>{matchError}</Alert>}
                 <DialogContent>
                     <Box display='flex' justifyContent='space-between' alignItems='center' px={10}>
                         <Avatar src={image64} sx={{ width: 150, height: 150, border: "1px solid #008ED3"}}/>
