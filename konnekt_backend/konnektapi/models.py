@@ -5,18 +5,20 @@ def pathTo(instance, fileName):
 
 # Create your models here.
 class JobSeeker(models.Model):
-    name = models.CharField(max_length=60)
+    id = models.BigAutoField(auto_created=True, primary_key=True, verbose_name='ID') 
+    name = models.CharField(null=True, max_length=60)
     birth_date = models.DateField(null=True)
-    gender = models.CharField(max_length=60)
+    gender = models.CharField(null=True, max_length=60)
     image = models.ImageField(blank=True, null=True, upload_to=pathTo)
-    email = models.CharField(max_length=60)
-    # password = models.CharField(max_length=60)
+    email = models.CharField(null=True, max_length=60)
+    password = models.CharField(null=True, max_length=60)
+    desc = models.TextField(null=True)
     # age = models.CharField(max_length=60)
-    lang_preference = models.CharField(max_length=60, null=True)
+    lang_preference = models.CharField(null=True, max_length=60)
 
 
     def __str__(self):
-        return self.name, self.birth_date, self.gender, self.image, self.email, self.lang_preference
+        return self.id, self.name, self.birth_date, self.gender, self.image, self.email, self.password, self.desc, self.lang_preference
 
 class JobPost(models.Model): 
     pub_date = models.DateTimeField('published', null=True)
