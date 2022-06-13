@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import JobSeeker, JobPost
+from .models import JobSeeker, JobPost, Jobs
 
 class JobSeekerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -9,4 +9,9 @@ class JobSeekerSerializer(serializers.HyperlinkedModelSerializer):
 class JobPostSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = JobPost
-        fields = ('pub_date', 'company_name', 'job_position', 'lang_qualification')
+        fields = ('id', 'company_name', 'address', 'phone_no', 'email', 'password')
+
+class JobsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Jobs
+        fields = ('id', 'company_name', 'address', 'phone_no', 'email', 'job_position', 'type', 'desc', 'lang_qualification', 'company_id')

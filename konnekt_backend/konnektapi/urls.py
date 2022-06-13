@@ -7,9 +7,10 @@ from django.conf import settings
 router = routers.DefaultRouter()
 router.register(r'jobseeker', views.JobSeekerViewSet)
 router.register(r'jobpost', views.JobPostViewSet)
+router.register(r'jobs', views.JobsViewSet)
 
 urlpatterns = [
     path('', include(router.urls))
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
