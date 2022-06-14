@@ -14,6 +14,9 @@ import Dashboard from "./components/Dashboard";
 import PrivateRoute from './components/PrivateRoute'
 import PublicRoute from './components/PublicRoute'
 import Forgot from './components/Forgot'
+import CompanySignUp from "./components/CompanySignUp";
+import CompanyDashboard from "./components/CompanyDashboard";
+import UpdateCredentials from "./components/UpdateCredentials";
 
 function App() {
     // console.log(data)
@@ -26,9 +29,12 @@ function App() {
                             <Route path='/signup' element={<SignUp/>}/>
                             <Route path='/signin' element={<SignIn/>}/>
                             <Route path='/forgot' element={<Forgot/>}/>
+                            <Route path='/companysignup' element={<CompanySignUp/>}/>
                         </Route>
                         <Route element={<PrivateRoute/>}>
                             <Route exact path='/' element={<Dashboard/>}/>
+                            <Route path='/companydashboard' element={<CompanyDashboard/>}/>
+                            <Route path='/updatecredentials' element={<UpdateCredentials/>}/>
                         </Route>
                     </Routes>
                 </AuthProvider>

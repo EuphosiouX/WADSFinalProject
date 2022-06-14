@@ -1,6 +1,7 @@
 const { createProxyMiddleware } = require("http-proxy-middleware");
+
 const backend = {
-    target: 'http://127.0.0.1:8000',
+    target: 'https://konnekt-backend-prod.herokuapp.com',
     changeOrigin: true
 };
 
@@ -18,6 +19,12 @@ module.exports = function (app) {
     app.use(
         createProxyMiddleware('/jobseeker/', backend)
     );
+    app.use(
+        createProxyMiddleware('/jobpost/', backend)
+    );
+    app.use(
+        createProxyMiddleware('/jobs/', backend)
+    )
     app.use(
         createProxyMiddleware('/signatures', nodefluxAuth)
     );

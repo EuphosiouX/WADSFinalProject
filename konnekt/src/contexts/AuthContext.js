@@ -29,11 +29,11 @@ export default function AuthProvider({children}) {
     }
 
     const upEmail = (email) => {
-        return updateEmail(email)
+        return updateEmail(currentUser, email)
     }
 
     const upPassword = (password) => {
-        return updatePassword(password)
+        return updatePassword(currentUser, password)
     }
 
     useEffect(() => {

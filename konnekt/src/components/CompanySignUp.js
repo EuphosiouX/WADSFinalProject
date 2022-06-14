@@ -18,53 +18,36 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { Typography } from '@mui/material';
 
-const SignUp = () => {
+const CompanySignUp = () => {
 
     const navigate = useNavigate()
-    const [firstName, setFirstName] = useState('');
-    const [lastName, setLastName] = useState('');
-    const [bdate, setBdate] = useState(new Date());
-    const [gender, setGender] = useState('Female');
-    const [email, setEmail] = useState('');
-    const [pass, setPass] = useState('');
+    const [companyName, setCompanyName] = useState('');
+    const [address, setAddress] = useState('');
+    const [phoneNo, setPhoneNo] = useState('');
+    const [companyEmail, setCompanyEmail] = useState('');
+    const [companyPass, setCompanyPass] = useState('');
     const [cpass, setCpass] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState();
     const { signUp } = useAuth();
 
-    const dateStyle = (date) => {
-        let dd = date.getDate();
-        let mm = date.getMonth()+1;
-        const yyyy = date.getFullYear();
-
-        if(dd<10){
-            dd = '0' + dd
-        }
-
-        if(mm<10){
-            mm = '0' + mm
-        }
-
-        return setBdate(yyyy + '-' + mm + '-' + dd)
-    }
-
-    const handleSubmit = async (e) => {
+    let handleSubmit = async (e) => {
         e.preventDefault()
 
-        if (pass.length < 8){
+        if (companyPass.length < 8){
             return setError('Password must be at least 8 character long')
         }
 
-        if (pass !== cpass){
+        if (companyPass !== cpass){
             return setError('Check your confirm password')
         }
-        
+
         try{
             setError('')
             setLoading(true)
-            await signUp(email, pass)
+            await signUp(companyEmail, companyPass)
             handlePost()
-            navigate('/')
+            navigate('/companydashboard')
         }
         catch (err){
             setError('Unexpected error occured')
@@ -73,17 +56,16 @@ const SignUp = () => {
         setLoading(false)
     }
 
-    const handlePost = async () => {
+    let handlePost = async () => {
         try{
             const uploadData = new FormData();
-            uploadData.append('name', firstName + ' ' + lastName)
-            uploadData.append('birth_date', bdate)
-            uploadData.append('gender', gender)
-            uploadData.append('email', email)
-            uploadData.append('password', pass)
-            uploadData.append('desc', 'Type something about yourself!!!')
+            uploadData.append('company_name', companyName)
+            uploadData.append('address', address)
+            uploadData.append('phone_no', phoneNo)
+            uploadData.append('email', companyEmail)
+            uploadData.append('password', companyPass)
 
-            await fetch('/jobseeker/', {
+            await fetch('/jobpost/', {
                 method: 'POST',
                 body: uploadData
             });
@@ -91,6 +73,7 @@ const SignUp = () => {
 
             
         catch (err){
+            setError('Unexpected error occured')
             console.log(err)
         }
     }
@@ -118,66 +101,26 @@ const SignUp = () => {
                     <img className="logo" src={logo} alt="" />
                     {error && <Alert severity='error'>{error}</Alert>}
                     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 5 }}>
-                        <Grid container spacing={1} justifyContent='center' mb={1}>
-                            <Grid item xs={6}>
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    label="First Name"
-                                    autoComplete="given-name"
-                                    value={firstName}
-                                    onChange={(e) => setFirstName(e.target.value)}
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField
-                                    margin="normal"
-                                    required
-                                    fullWidth
-                                    label="Last Name"
-                                    autoComplete="family-name"
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={1} justifyContent='center'>
-                            <Grid item xs={6}>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <DatePicker
-                                        label="Birth Date"
-                                        value={bdate}
-                                        onChange={(e) => dateStyle(e)}
-                                        renderInput={(params) => <TextField fullWidth {...params} />}
-                                    />
-                                </LocalizationProvider>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl>
-                                    <FormLabel>Gender</FormLabel>
-                                        <RadioGroup     
-                                            row
-                                            defaultValue="Female"
-                                            value={gender}
-                                            onChange={(e) => setGender(e.target.value)}
-                                        >
-                                            <FormControlLabel value="Female" control={<Radio />} label="Female" />
-                                            <FormControlLabel value="Male" control={<Radio />} label="Male" />
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={1} > 
+                        <Grid container justifyContent='center'>
                             <Grid item xs={12}>
                                 <TextField
                                     margin="normal"
                                     required
                                     fullWidth
-                                    label="Email Address"
-                                    autoComplete="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    label="Company Name"
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    margin="normal"
+                                    fullWidth
+                                    multiline
+                                    rows={4}
+                                    label="Company Address"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -185,11 +128,32 @@ const SignUp = () => {
                                     margin="normal"
                                     required
                                     fullWidth
+                                    label="Company Phone No"
+                                    value={phoneNo}
+                                    onChange={(e) => setPhoneNo(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    label="Company Email"
+                                    autoComplete='email'
+                                    value={companyEmail}
+                                    onChange={(e) => setCompanyEmail(e.target.value)}
+                                />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <TextField
+                                    margin="normal"
+                                    required
+                                    fullWidth
+                                    type='password'
                                     label="Password"
-                                    type="password"
-                                    autoComplete="new-password"
-                                    value={pass}
-                                    onChange={(e) => setPass(e.target.value)}
+                                    autoComplete='new-password'
+                                    value={companyPass}
+                                    onChange={(e) => setCompanyPass(e.target.value)}
                                 />
                             </Grid>
                             <Grid item xs={12}>
@@ -197,9 +161,8 @@ const SignUp = () => {
                                     margin="normal"
                                     required
                                     fullWidth
+                                    type='password'
                                     label="Confirm Password"
-                                    type="password"
-                                    autoComplete="new-password"
                                     value={cpass}
                                     onChange={(e) => setCpass(e.target.value)}
                                 />
@@ -218,8 +181,8 @@ const SignUp = () => {
                             <Link href="/signin" variant="body" sx={{color: '#008ED3'}}>
                                 Already have an account? Sign in
                             </Link>
-                            <Link href="/companysignup" variant="body" sx={{color: '#008ED3'}}>
-                                Not a job seeker? Sign up as a job poster
+                            <Link href="/signup" variant="body" sx={{color: '#008ED3'}}>
+                                Not a job poster? Sign up as a job seeker
                             </Link>
                         </Grid>
                     </Box>
@@ -229,4 +192,4 @@ const SignUp = () => {
     );
 }
 
-export default SignUp
+export default CompanySignUp

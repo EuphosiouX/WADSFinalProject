@@ -29,10 +29,11 @@ const SignIn = () => {
             setError('')
             setLoading(true)
             await signIn(email, pass)
-            navigate('/')
+            navigate('/')            
         }
-        catch{
+        catch (err){
             setError('Failed to sign in')
+            console.log(err)
         }
 
         setLoading(false)

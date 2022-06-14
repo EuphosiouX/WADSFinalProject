@@ -9,11 +9,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import { nodefluxAuthentication, nodefluxEnrollment, nodefluxMatch } from './ReqNodeflux';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+import { storage } from '../firebase/Config'
 
 const Header = () => {
 
-    const navigate = useNavigate()
-    const [id, setId] = useState()
+    const navigate = useNavigate();
+    const [id, setId] = useState();
+    const [name, setName] = useState('');
     const [image, setImage] = useState('');
     const [imageFile, setImageFile] = useState();
     const [picture, setPicture] = useState('');
@@ -43,6 +46,7 @@ const Header = () => {
                 for(let i=0; i<profiles.length; i++){
                     if(profiles[i].email === currentUser.email){
                         setId(profiles[i].id)
+                        setName(profiles[i].name)
                         setImage(profiles[i].image)
                         setEmail(profiles[i].email)
                         setPass(profiles[i].password)
@@ -100,11 +104,28 @@ const Header = () => {
         setIsOpennn(false)
     }
 
+    const handleUpload = async (file) => {  
+
+        const storeRef = ref(storage, `${name}`)
+        try{
+            await uploadBytes(storeRef, file)
+        }catch (err){
+            console.log(err)
+            setUploadError('Cannot upload file')
+        }
+        getDownloadURL(storeRef).then(url => {setImage(url)})
+    }
+
     const handleUpdatePhoto = () => {
         setUploadError('')
+        setLoading(true)
         if (imageFile == null){
+            setLoading(false)
             return setUploadError('Please add a photo before updating/changing the photo')
         }
+
+        handleUpload(imageFile)
+        setLoading(false)
         handleOpenn()
     }
 
@@ -120,8 +141,6 @@ const Header = () => {
         let enrollReply
         let faceId
         let matchReply
-
-        console.log(picture)
 
         enrollReply = await nodefluxEnrollment(image64)
 
@@ -149,8 +168,7 @@ const Header = () => {
         if(matchReply.message === 'Face Match Enrollment Success'){
             try{
                 const uploadData = new FormData();
-                uploadData.append('image', imageFile, imageFile.name)
-
+                uploadData.append('image', image)
                 await fetch('/jobseeker/' + id + '/', {
                     method: 'PUT',
                     body: uploadData
@@ -173,7 +191,7 @@ const Header = () => {
     }
 
     const handleUpdateProfile = () => {
-        return null
+        navigate('/updatecredentials')
     }
 
     const handleLogout = async () => {
@@ -187,6 +205,10 @@ const Header = () => {
         }
     }
 
+    const showAlert = (msg) => {
+        alert(msg)
+    }
+
     return (
         <header>
             <AppBar sx={{bgcolor: '#D1D3D4'}}>
@@ -194,22 +216,15 @@ const Header = () => {
                     <Grid item xs={11} display="flex" justifyContent="space-between">
                         <Box display="flex" alignItems='center' justifyContent='center'>
                             <Link href='/'><img className="logo" src={logo} alt="" /></Link> 
-                            <Select variant='filled' defaultValue='Full Time' sx={{marginLeft: 3}} size='small'>
-                                <MenuItem value="Full Time">Full-Time</MenuItem>
-                                <MenuItem value="Part Time">Part-Time</MenuItem>
-                                <MenuItem value="Full and Part">Full/Part</MenuItem>
-                            </Select>
-                            <TextField label="Search Job Now" type="search" variant='filled' size='small' sx={{mx: 3}}/>  
-                            <Button variant="contained" startIcon={<SearchIcon />} sx={{bgcolor:'#008ED3'}}>Search</Button>
                         </Box>
                         {error && <Alert severity='error'>{error}</Alert>}
                         <Box display="flex" alignItems='center' justifyContent='center'>
-                            <Fab size="small" href="http://localhost:3000/" sx={{bgcolor:'#008ED3'}} color='primary'>
+                            <Fab size="small" onClick={() => showAlert('Messaging feature coming soon to Konnekt!')} sx={{bgcolor:'#008ED3'}} color='primary'>
                                 <Badge color="secondary" badgeContent={3}>
                                     <MailIcon sx={{color: 'white'}}/>
                                 </Badge>
                             </Fab>
-                            <Fab size="small" href="http://localhost:3000/" sx={{bgcolor:'#008ED3', mx: 1}} color='primary'>
+                            <Fab size="small" onClick={() => showAlert('Notifications feature coming soon to Konnekt!')} sx={{bgcolor:'#008ED3', mx: 1}} color='primary'>
                                 <Badge color="secondary" variant="dot">
                                     <NotificationsIcon sx={{color: 'white'}}/>
                                 </Badge>
@@ -223,7 +238,7 @@ const Header = () => {
 
 {/*---------------------------------------------------------------------------------------------------------------------------------------*/}
 
-            <Dialog open={isOpen}>
+            <Dialog open={isOpen} fullWidth>
                 <DialogTitle variant='body'>
                     <Box display='flex' justifyContent='space-between' alignItems='center'>
                         Update Credentials/Photo
@@ -238,7 +253,7 @@ const Header = () => {
                         <Grid container item xs={5} alignItems='center'>
                             <Grid item xs={12}>
                                 <Avatar src={image} sx={{ width: 150, height: 150, border: "1px solid #008ED3", mr: 1, '&:hover':{boxShadow: '0px 0px 25px rgba(0, 0, 0, 0.1)'}}}/>
-                                <input type='file' onChange={(e) => {setImageFile(e.target.files[0]); toBase64(e.target.files[0])}}></input>
+                                <input type='file' accept='image/jpeg' onChange={(e) => {setImageFile(e.target.files[0]); toBase64(e.target.files[0])}}></input>
                             </Grid>
                             
                         </Grid>
@@ -264,7 +279,7 @@ const Header = () => {
 
 {/*---------------------------------------------------------------------------------------------------------------------------------------*/}
 
-            <Dialog open={isOpenn}>
+            <Dialog open={isOpenn} fullWidth>
                 <DialogTitle variant='body'>
                     <Box display='flex' justifyContent='space-between' alignItems='center'>
                         Take a picture
