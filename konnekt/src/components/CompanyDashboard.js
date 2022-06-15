@@ -20,24 +20,28 @@ const CompanyDashboard = () => {
     useEffect(() => {
         let handleFetch = async () => {
             try{
-                const ref = await fetch('/jobpost/?search=' + currentUser.email, {
+                const ref = await fetch('/jobpost/', {
                     method: 'GET'
                 })
                 const val = await ref.json()
-                setCompanyId(val[0].id)
-
                 if(val.length < 1){
                     navigate('/')
                 }
                 else{
                     navigate('/companydashboard')
+                    for(let i=0; i<val.length; i++) {
+                        if(val[i].email === currentUser.email) {
+                            setCompanyId(val[i].id)
+                        }
+                    }
                 }
+
             } catch (err){
                 console.log(err)
             }
         }
         handleFetch()
-    }, []);
+    }, [,companyId]);
 
     useEffect(() => {
         let handleFetch = async () => {
@@ -55,6 +59,9 @@ const CompanyDashboard = () => {
         }
         handleFetch()
     }, [companyJob]);
+
+    console.log(companyId)
+    console.log(companyJob)
 
     return (
         <div>

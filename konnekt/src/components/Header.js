@@ -60,6 +60,7 @@ const Header = () => {
             }
         }
         handleFetch()
+        setError('')
     }, []);
 
     const toBase64 = (file) => {
@@ -176,7 +177,7 @@ const Header = () => {
             }catch (err){
                 console.log(err)
                 setLoading(false)
-                return setMatchError('Unexpected error occured')
+                return setMatchError('Cannot upload photo')
             }
             handleCloseee()
             handleClosee()
